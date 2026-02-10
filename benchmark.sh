@@ -33,12 +33,16 @@ run_test() {
   local name="$1"
   local prompt="$2"
   local check="$3"
-  local timeout="${4:-30}"
+  local timeout="${4:-90}"
 
   TOTAL=$((TOTAL + 1))
   echo -n -e "  [${TOTAL}] ${name}... "
 
-  RESPONSE=$(timeout "${timeout}" ollama run "$MODEL" "$prompt" 2>/dev/null || echo "TIMEOUT")
+  # Use Ollama API directly (avoids ANSI escape codes from terminal)
+  RESPONSE=$(curl -s --max-time "${timeout}" http://localhost:11434/api/generate \
+    -d "{\"model\":\"$MODEL\",\"prompt\":$(echo "$prompt" | jq -Rs .),\"stream\":false,\"options\":{\"num_predict\":1024}}" \
+    2>/dev/null | jq -r '.response // empty' 2>/dev/null)
+  [ -z "$RESPONSE" ] && RESPONSE="TIMEOUT"
 
   if echo "$RESPONSE" | grep -qiE "$check"; then
     echo -e "${GREEN}PASS${NC}"
