@@ -33,14 +33,15 @@ run_test() {
   local name="$1"
   local prompt="$2"
   local check="$3"
-  local timeout="${4:-90}"
+  local timeout="${4:-180}"
 
   TOTAL=$((TOTAL + 1))
   echo -n -e "  [${TOTAL}] ${name}... "
 
   # Use Ollama API directly (avoids ANSI escape codes from terminal)
+  # num_ctx=4096 keeps prompt processing fast, num_predict=512 limits output
   RESPONSE=$(curl -s --max-time "${timeout}" http://localhost:11434/api/generate \
-    -d "{\"model\":\"$MODEL\",\"prompt\":$(echo "$prompt" | jq -Rs .),\"stream\":false,\"options\":{\"num_predict\":1024}}" \
+    -d "{\"model\":\"$MODEL\",\"prompt\":$(echo "$prompt" | jq -Rs .),\"stream\":false,\"options\":{\"num_predict\":512,\"num_ctx\":4096}}" \
     2>/dev/null | jq -r '.response // empty' 2>/dev/null)
   [ -z "$RESPONSE" ] && RESPONSE="TIMEOUT"
 
