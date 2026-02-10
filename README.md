@@ -26,7 +26,7 @@
 Fine-tuned with QLoRA on 100K+ curated coding samples. Designed to write perfect, production-ready code
 in 100+ programming languages.
 
-*Developed by **Mr.Morningstar** — Alinasser AI Lab*
+*Developed by **Ali Nasser** — github.com/morningstarnasser*
 
 </div>
 
@@ -107,7 +107,7 @@ curl http://localhost:11434/api/generate -d '{
 
 | | |
 |:---|:---|
-| **Developed by** | Mr.Morningstar (Alinasser AI Lab) |
+| **Developed by** | Ali Nasser (github.com/morningstarnasser) |
 | **Model Size** | 14.2 Billion Parameters |
 | **Architecture** | Qwen2 Transformer (GQA, RoPE, SwiGLU) |
 | **Context Length** | 131,072 tokens (128K) |
@@ -296,9 +296,9 @@ Morningstar generates optimized PostgreSQL with CTEs, window functions, and prop
 ```bibtex
 @misc{morningstar-14b-code-2025,
   title   = {Morningstar-14B-Code: An Elite Open-Source Coding Assistant},
-  author  = {Mr.Morningstar},
+  author  = {Ali Nasser},
   year    = {2025},
-  publisher = {Alinasser AI Lab},
+  publisher = {github.com/morningstarnasser},
   url     = {https://github.com/morningstarnasser/MORNINGSTAR-14B-CODE}
 }
 ```
@@ -307,7 +307,7 @@ Morningstar generates optimized PostgreSQL with CTEs, window functions, and prop
 
 <div align="center">
 
-**Built with passion by [Mr.Morningstar](https://github.com/morningstarnasser) — Alinasser AI Lab**
+**Built with passion by [Ali Nasser](https://github.com/morningstarnasser) — github.com/morningstarnasser**
 
 *The God of Code. Open Source. Forever Free.*
 

@@ -8,7 +8,7 @@ Usage:
     python create_dataset.py
     python create_dataset.py --output_dir ./data --max_total_samples 50000
 
-Developed by: Mr.Morningstar (Alinasser AI Lab)
+Developed by: Ali Nasser (github.com/morningstarnasser)
 """
 
 import json

@@ -10,7 +10,7 @@ Usage:
     python merge_and_export.py --export_gguf --gguf_quant q4_k_m
     python merge_and_export.py --create_ollama_model
 
-Developed by: Mr.Morningstar (Alinasser AI Lab)
+Developed by: Ali Nasser (github.com/morningstarnasser)
 """
 
 import argparse

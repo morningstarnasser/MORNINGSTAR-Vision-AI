@@ -10,7 +10,7 @@ Usage:
     python train.py --base_model Qwen/Qwen2.5-Coder-14B-Instruct --epochs 3
     python train.py --dataset_path ./data/train.jsonl --resume_from checkpoint-500
 
-Developed by: Mr.Morningstar (Alinasser AI Lab)
+Developed by: Ali Nasser (github.com/morningstarnasser)
 """
 
 import os
@@ -96,7 +96,7 @@ def main():
 
     print("=" * 60)
     print("  MORNINGSTAR-14B-CODE — QLoRA Training")
-    print("  by Mr.Morningstar (Alinasser AI Lab)")
+    print("  by Ali Nasser (github.com/morningstarnasser)")
     print("=" * 60)
     print(f"\n  Base Model:     {args.base_model}")
     print(f"  Dataset:        {args.dataset_path}")
