@@ -1,10 +1,26 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 export function ChatInput({ onSend, onStop, streaming, supportsVision }) {
   const [text, setText] = useState('');
   const [images, setImages] = useState([]);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // Scroll input into view when focused on mobile (keyboard push)
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const handleFocus = () => {
+      // Small delay to wait for keyboard to fully appear
+      setTimeout(() => {
+        textarea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 300);
+    };
+
+    textarea.addEventListener('focus', handleFocus);
+    return () => textarea.removeEventListener('focus', handleFocus);
+  }, []);
 
   const handleSubmit = useCallback(() => {
     if (streaming) return;
@@ -14,6 +30,10 @@ export function ChatInput({ onSend, onStop, streaming, supportsVision }) {
     setImages([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
+      // Blur on mobile after sending to dismiss keyboard
+      if ('ontouchstart' in window) {
+        textareaRef.current.blur();
+      }
     }
   }, [text, images, streaming, onSend]);
 
@@ -29,7 +49,7 @@ export function ChatInput({ onSend, onStop, streaming, supportsVision }) {
     // Auto-resize
     const el = e.target;
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
   }, []);
 
   const handleAttach = useCallback(() => {
@@ -82,6 +102,7 @@ export function ChatInput({ onSend, onStop, streaming, supportsVision }) {
               ref={fileInputRef}
               type="file"
               accept="image/*"
+              capture="environment"
               multiple
               hidden
               onChange={handleFiles}
@@ -97,6 +118,10 @@ export function ChatInput({ onSend, onStop, streaming, supportsVision }) {
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             rows={1}
+            enterKeyHint="send"
+            autoComplete="off"
+            autoCorrect="on"
+            spellCheck="true"
           />
         </div>
         {streaming ? (

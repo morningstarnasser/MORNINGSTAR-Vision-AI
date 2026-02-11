@@ -3,6 +3,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
@@ -27,23 +28,47 @@
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --app-height: 100%;
 }
 
-html, body {
+html {
   height: 100%;
   overflow: hidden;
+  /* Prevent overscroll bounce on iOS */
+  overscroll-behavior: none;
 }
 
 body {
+  height: 100%;
+  overflow: hidden;
   font-family: var(--font-sans);
   background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent pull-to-refresh */
+  overscroll-behavior-y: contain;
+  /* Prevent text selection on double-tap */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Fix iOS standalone mode */
+  position: fixed;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+/* Allow text selection inside messages */
+.message-bubble,
+.message-bubble * {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 #root {
-  height: 100%;
+  height: var(--app-height);
+  overflow: hidden;
 }
 
 /* ===== App Layout ===== */
@@ -54,6 +79,7 @@ body {
   max-width: 768px;
   margin: 0 auto;
   position: relative;
+  overflow: hidden;
 }
 
 /* ===== Header ===== */
@@ -61,38 +87,43 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(var(--safe-top) + 12px) 16px 12px;
+  padding: calc(var(--safe-top) + 10px) calc(var(--safe-right) + 12px) 10px calc(var(--safe-left) + 12px);
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   z-index: 10;
+  min-height: 52px;
 }
 
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .header-logo {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
 .header-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent), var(--gold));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 /* ===== Model Selector ===== */
@@ -103,32 +134,36 @@ body {
 .model-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 5px;
+  padding: 7px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: 34px;
+  touch-action: manipulation;
 }
 
-.model-btn:hover, .model-btn:active {
+.model-btn:active {
   border-color: var(--accent);
   background: var(--bg-input);
+  transform: scale(0.96);
 }
 
 .model-btn .dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent);
+  flex-shrink: 0;
 }
 
 .model-btn .chevron {
-  font-size: 10px;
+  font-size: 8px;
   color: var(--text-muted);
 }
 
@@ -154,7 +189,7 @@ body {
 .model-option {
   display: flex;
   flex-direction: column;
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s;
@@ -163,9 +198,11 @@ body {
   width: 100%;
   text-align: left;
   color: var(--text-primary);
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
-.model-option:hover, .model-option:active {
+.model-option:active {
   background: var(--bg-tertiary);
 }
 
@@ -175,17 +212,17 @@ body {
 }
 
 .model-option-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .model-option-desc {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
 }
 
-/* ===== Settings Button ===== */
+/* ===== Action Buttons ===== */
 .settings-btn {
   display: flex;
   align-items: center;
@@ -199,11 +236,14 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   font-size: 18px;
+  touch-action: manipulation;
+  flex-shrink: 0;
 }
 
-.settings-btn:hover, .settings-btn:active {
+.settings-btn:active {
   border-color: var(--accent);
   color: var(--accent);
+  transform: scale(0.92);
 }
 
 /* ===== Settings Panel ===== */
@@ -230,6 +270,7 @@ body {
   animation: slideUp 0.25s ease-out;
   max-height: 80vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes slideUp {
@@ -271,15 +312,18 @@ body {
 
 .settings-input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text-primary);
-  font-size: 14px;
+  /* 16px prevents iOS zoom on focus */
+  font-size: 16px;
   font-family: var(--font-mono);
   outline: none;
   transition: border-color 0.2s;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .settings-input:focus {
@@ -296,13 +340,15 @@ body {
 .messages {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  overflow-x: hidden;
+  padding: 12px calc(var(--safe-right) + 12px) 12px calc(var(--safe-left) + 12px);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .messages::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 .messages::-webkit-scrollbar-thumb {
@@ -318,18 +364,18 @@ body {
   justify-content: center;
   height: 100%;
   text-align: center;
-  padding: 20px;
-  gap: 16px;
+  padding: 16px;
+  gap: 12px;
 }
 
 .welcome-logo {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   opacity: 0.9;
 }
 
 .welcome h2 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent), var(--gold));
   -webkit-background-clip: text;
@@ -339,53 +385,63 @@ body {
 
 .welcome p {
   color: var(--text-muted);
-  font-size: 14px;
-  max-width: 300px;
+  font-size: 13px;
+  max-width: 280px;
   line-height: 1.5;
 }
 
 .quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 8px;
+  width: 100%;
+  max-width: 320px;
 }
 
 .quick-action {
-  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius);
   color: var(--text-secondary);
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
+  min-height: 44px;
+  touch-action: manipulation;
+  text-align: center;
+  line-height: 1.3;
 }
 
-.quick-action:hover, .quick-action:active {
+.quick-action:active {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(255, 107, 53, 0.08);
+  background: rgba(255, 107, 53, 0.1);
+  transform: scale(0.97);
 }
 
 /* Message bubbles */
 .message {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   animation: msgIn 0.2s ease-out;
+  max-width: 100%;
 }
 
 @keyframes msgIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .message-role {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   padding-left: 4px;
 }
 
@@ -393,27 +449,31 @@ body {
 .message-role.assistant { color: var(--accent); }
 
 .message-bubble {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: var(--radius);
   line-height: 1.6;
   font-size: 14px;
   word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .message.user .message-bubble {
   background: var(--user-bubble);
   border-bottom-right-radius: 4px;
+  margin-left: 24px;
 }
 
 .message.assistant .message-bubble {
   background: var(--ai-bubble);
   border: 1px solid var(--border);
   border-bottom-left-radius: 4px;
+  margin-right: 8px;
 }
 
 /* Image preview in messages */
 .message-image {
-  max-width: 240px;
+  max-width: 100%;
   max-height: 200px;
   border-radius: 8px;
   margin-bottom: 8px;
@@ -423,58 +483,79 @@ body {
 /* Markdown rendering */
 .message-bubble p { margin-bottom: 8px; }
 .message-bubble p:last-child { margin-bottom: 0; }
-.message-bubble ul, .message-bubble ol { padding-left: 20px; margin-bottom: 8px; }
+.message-bubble ul, .message-bubble ol { padding-left: 18px; margin-bottom: 8px; }
 .message-bubble li { margin-bottom: 4px; }
 
 .message-bubble code {
   font-family: var(--font-mono);
   font-size: 12px;
   background: rgba(255, 255, 255, 0.06);
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
+  word-break: break-all;
 }
 
 .message-bubble pre {
   background: #0d0d1a;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   overflow-x: auto;
-  margin: 8px 0;
+  -webkit-overflow-scrolling: touch;
+  margin: 8px -6px;
   position: relative;
+  /* Prevent code block from being wider than bubble */
+  max-width: calc(100% + 12px);
 }
 
 .message-bubble pre code {
   background: none;
   padding: 0;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
+  word-break: normal;
 }
 
+/* Copy button — always visible on mobile (no hover) */
 .copy-btn {
   position: absolute;
   top: 6px;
   right: 6px;
-  padding: 4px 8px;
+  padding: 6px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text-muted);
   font-size: 11px;
   cursor: pointer;
-  opacity: 0;
   transition: all 0.2s;
+  touch-action: manipulation;
+  min-height: 28px;
 }
 
-.message-bubble pre:hover .copy-btn { opacity: 1; }
-.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+/* On touch devices copy btn is always visible */
+@media (hover: none) and (pointer: coarse) {
+  .copy-btn { opacity: 1; }
+}
+
+/* On desktop show on hover */
+@media (hover: hover) {
+  .copy-btn { opacity: 0; }
+  .message-bubble pre:hover .copy-btn { opacity: 1; }
+}
+
+.copy-btn:active {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: scale(0.94);
+}
 
 /* Typing indicator */
 .typing-indicator {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 12px 16px;
+  padding: 8px 0;
 }
 
 .typing-indicator span {
@@ -495,7 +576,7 @@ body {
 
 /* ===== Input Area ===== */
 .input-area {
-  padding: 12px 16px calc(var(--safe-bottom) + 12px);
+  padding: 8px calc(var(--safe-right) + 10px) calc(var(--safe-bottom) + 8px) calc(var(--safe-left) + 10px);
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -507,6 +588,7 @@ body {
   gap: 8px;
   margin-bottom: 8px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding-bottom: 4px;
 }
 
@@ -516,8 +598,8 @@ body {
 }
 
 .image-preview-thumb {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 8px;
   object-fit: cover;
   border: 1px solid var(--border);
@@ -527,32 +609,33 @@ body {
   position: absolute;
   top: -6px;
   right: -6px;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   background: var(--accent);
-  border: none;
+  border: 2px solid var(--bg-secondary);
   border-radius: 50%;
   color: white;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  touch-action: manipulation;
 }
 
 .input-row {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 .attach-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   background: none;
   border: 1px solid var(--border);
   border-radius: 50%;
@@ -560,34 +643,42 @@ body {
   font-size: 20px;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.2s;
+  transition: all 0.15s;
+  touch-action: manipulation;
 }
 
-.attach-btn:hover, .attach-btn:active {
+.attach-btn:active {
   border-color: var(--accent);
   color: var(--accent);
+  transform: scale(0.92);
 }
 
 .input-wrapper {
   flex: 1;
   position: relative;
+  min-width: 0;
 }
 
 .input-field {
   width: 100%;
-  min-height: 40px;
-  max-height: 120px;
+  min-height: 42px;
+  max-height: 100px;
   padding: 10px 14px;
   background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-primary);
-  font-size: 14px;
+  /* 16px prevents iOS auto-zoom on focus */
+  font-size: 16px;
   font-family: var(--font-sans);
   outline: none;
   resize: none;
   line-height: 1.4;
   transition: border-color 0.2s;
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .input-field:focus {
@@ -596,14 +687,15 @@ body {
 
 .input-field::placeholder {
   color: var(--text-muted);
+  font-size: 14px;
 }
 
 .send-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   background: var(--accent);
   border: none;
   border-radius: 50%;
@@ -611,11 +703,11 @@ body {
   font-size: 18px;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.2s;
+  transition: all 0.15s;
+  touch-action: manipulation;
 }
 
-.send-btn:hover { background: var(--accent-hover); }
-.send-btn:active { transform: scale(0.93); }
+.send-btn:active { transform: scale(0.9); }
 .send-btn:disabled {
   background: var(--border);
   cursor: not-allowed;
@@ -625,7 +717,7 @@ body {
   background: #cc3333;
 }
 
-.stop-btn:hover {
+.stop-btn:active {
   background: #dd4444;
 }
 
@@ -634,29 +726,35 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 8px calc(var(--safe-right) + 12px) 8px calc(var(--safe-left) + 12px);
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(247, 201, 72, 0.1));
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  gap: 8px;
 }
 
 .install-banner-text {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
 }
 
 .install-banner-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .install-banner-btn {
-  padding: 6px 14px;
+  padding: 7px 14px;
   border-radius: 16px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   border: none;
+  min-height: 32px;
+  touch-action: manipulation;
 }
 
 .install-banner-btn.primary {
@@ -675,8 +773,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 6px;
-  font-size: 12px;
+  padding: 5px calc(var(--safe-right) + 12px) 5px calc(var(--safe-left) + 12px);
+  font-size: 11px;
   background: rgba(204, 51, 51, 0.15);
   color: #ff6666;
   flex-shrink: 0;
@@ -692,13 +790,125 @@ body {
   height: 6px;
   border-radius: 50%;
   background: currentColor;
+  flex-shrink: 0;
 }
 
-/* ===== Responsive ===== */
+/* ===== Small phones (≤ 375px like iPhone SE) ===== */
+@media (max-width: 375px) {
+  .header-title {
+    font-size: 13px;
+  }
+  .header-logo {
+    width: 24px;
+    height: 24px;
+  }
+  .model-btn {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  .welcome-logo {
+    width: 48px;
+    height: 48px;
+  }
+  .welcome h2 {
+    font-size: 18px;
+  }
+  .welcome p {
+    font-size: 12px;
+  }
+  .quick-actions {
+    gap: 6px;
+  }
+  .quick-action {
+    font-size: 11px;
+    padding: 10px 8px;
+  }
+  .message-bubble {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .message-bubble pre code {
+    font-size: 10px;
+  }
+}
+
+/* ===== Medium phones (376-430px) ===== */
+@media (min-width: 376px) and (max-width: 430px) {
+  .quick-actions {
+    max-width: 340px;
+  }
+}
+
+/* ===== Landscape mode ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .welcome-logo {
+    width: 40px;
+    height: 40px;
+  }
+  .welcome h2 {
+    font-size: 16px;
+  }
+  .welcome p {
+    display: none;
+  }
+  .quick-actions {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 500px;
+  }
+  .quick-action {
+    min-height: 36px;
+    padding: 8px;
+  }
+  .header {
+    padding-top: calc(var(--safe-top) + 6px);
+    padding-bottom: 6px;
+    min-height: 42px;
+  }
+  .input-area {
+    padding-top: 6px;
+    padding-bottom: calc(var(--safe-bottom) + 6px);
+  }
+  .input-field {
+    min-height: 36px;
+  }
+  .send-btn, .attach-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ===== Desktop ===== */
 @media (min-width: 769px) {
   .app {
     border-left: 1px solid var(--border);
     border-right: 1px solid var(--border);
+  }
+  .model-btn:hover {
+    border-color: var(--accent);
+    background: var(--bg-input);
+  }
+  .model-option:hover {
+    background: var(--bg-tertiary);
+  }
+  .settings-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .quick-action:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255, 107, 53, 0.08);
+  }
+  .send-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .attach-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .copy-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 }
 

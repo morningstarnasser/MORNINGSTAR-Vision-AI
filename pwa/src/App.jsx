@@ -24,6 +24,34 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const abortRef = useRef(null);
 
+  // Handle mobile viewport resize (keyboard open/close)
+  useEffect(() => {
+    const setViewportHeight = () => {
+      const vh = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+    };
+
+    setViewportHeight();
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', setViewportHeight);
+      window.visualViewport.addEventListener('scroll', setViewportHeight);
+    } else {
+      window.addEventListener('resize', setViewportHeight);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', setViewportHeight);
+        window.visualViewport.removeEventListener('scroll', setViewportHeight);
+      } else {
+        window.removeEventListener('resize', setViewportHeight);
+      }
+    };
+  }, []);
+
   // Persist API URL
   useEffect(() => {
     localStorage.setItem('ms-api-url', apiUrl);
@@ -130,6 +158,7 @@ export default function App() {
         messages={messages}
         streaming={streaming}
         model={model}
+        onQuickAction={handleSend}
       />
       <ChatInput
         onSend={handleSend}
