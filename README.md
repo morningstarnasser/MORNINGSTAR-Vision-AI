@@ -34,6 +34,7 @@
 [![Ollama](https://img.shields.io/badge/Ollama-Ready-22C55E?style=flat-square&logo=docker&logoColor=white)](https://ollama.com)
 [![Uncensored](https://img.shields.io/badge/Uncensored-No_Limits-EF4444?style=flat-square&logo=unlock&logoColor=white)](.)
 [![Benchmark](https://img.shields.io/badge/Score-19%2F19_Grade_S-FFD700?style=flat-square&logo=trophy&logoColor=black)](.)
+[![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97_HuggingFace-Models-orange?style=flat-square)](https://huggingface.co/kurdman991)
 
 <br/>
 
@@ -45,9 +46,9 @@
 
 <table>
 <tr>
-<td align="center"><b>morningstar</b><br/><sub>14B | 9 GB | Default</sub></td>
-<td align="center"><b>morningstar-32b</b><br/><sub>32B | 20 GB | Maximum</sub></td>
-<td align="center"><b>morningstar-vision</b><br/><sub>13B | 8 GB | Multimodal</sub></td>
+<td align="center"><a href="https://huggingface.co/kurdman991/morningstar-14b"><b>morningstar</b></a><br/><sub>14B | 9 GB | Default</sub></td>
+<td align="center"><a href="https://huggingface.co/kurdman991/morningstar-32b"><b>morningstar-32b</b></a><br/><sub>32B | 20 GB | Maximum</sub></td>
+<td align="center"><a href="https://huggingface.co/kurdman991/morningstar-vision"><b>morningstar-vision</b></a><br/><sub>13B | 8 GB | Multimodal</sub></td>
 </tr>
 <tr>
 <td align="center"><img src="https://img.shields.io/badge/Grade-S-FFD700?style=for-the-badge" /></td>
@@ -202,6 +203,14 @@ morningstar --model morningstar
 
 ## The Three Models
 
+### Download from HuggingFace
+
+| Model | Parameters | Size | HuggingFace |
+|:------|:---------:|:----:|:------------|
+| **morningstar** | 14.2B | 9 GB | [kurdman991/morningstar-14b](https://huggingface.co/kurdman991/morningstar-14b) |
+| **morningstar-32b** | 32.5B | 20 GB | [kurdman991/morningstar-32b](https://huggingface.co/kurdman991/morningstar-32b) |
+| **morningstar-vision** | 13B | 8 GB | [kurdman991/morningstar-vision](https://huggingface.co/kurdman991/morningstar-vision) |
+
 ### `morningstar` — The Default (14B)
 
 | | |
@@ -211,6 +220,7 @@ morningstar --model morningstar
 | **Context** | 128K tokens |
 | **Size** | ~9 GB |
 | **Best For** | Daily coding, fast iteration |
+| **HuggingFace** | [kurdman991/morningstar-14b](https://huggingface.co/kurdman991/morningstar-14b) |
 
 ### `morningstar-32b` — Maximum Power
 
@@ -221,6 +231,7 @@ morningstar --model morningstar
 | **Context** | 128K tokens |
 | **Size** | ~20 GB |
 | **Best For** | Complex architecture, maximum quality |
+| **HuggingFace** | [kurdman991/morningstar-32b](https://huggingface.co/kurdman991/morningstar-32b) |
 
 ### `morningstar-vision` — The Eyes
 
@@ -231,6 +242,7 @@ morningstar --model morningstar
 | **Context** | 4K tokens |
 | **Size** | ~8 GB |
 | **Best For** | Image analysis, screenshot-to-code, visual debugging |
+| **HuggingFace** | [kurdman991/morningstar-vision](https://huggingface.co/kurdman991/morningstar-vision) |
 
 ---
 
