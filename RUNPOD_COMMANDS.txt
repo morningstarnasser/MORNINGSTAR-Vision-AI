@@ -1,0 +1,156 @@
+# MORNINGSTAR - RunPod Setup Commands
+# Kopiere diese Commands nacheinander in RunPod Terminal
+
+# ============================================
+# SCHRITT 1: Erstelle RunPod Account & Pod
+# ============================================
+# 1. Gehe zu: https://runpod.io
+# 2. "Sign Up" (Email oder GitHub)
+# 3. Add Payment Method (Credit Card - wird erst bei Nutzung belastet)
+# 4. "Deploy" Button klicken
+
+# ============================================
+# SCHRITT 2: Pod Konfiguration
+# ============================================
+# Template: "PyTorch 2.1.0"
+# GPU: "A100 80GB" (empfohlen) oder "A6000 48GB"
+# Disk: 50 GB Container Disk + 50 GB Volume Disk
+# Expose HTTP Ports: NEIN (nicht nötig)
+# Expose TCP Ports: NEIN (nicht nötig)
+# "Deploy On-Demand"
+
+# ============================================
+# SCHRITT 3: SSH Verbindung (wird angezeigt)
+# ============================================
+# RunPod zeigt dir einen SSH Command wie:
+# ssh root@XXX.XXX.XXX.XXX -p XXXXX -i ~/.ssh/id_ed25519
+
+# ============================================
+# SCHRITT 4: In RunPod Terminal ausführen
+# ============================================
+
+# Download Setup Script
+cd /workspace
+wget https://raw.githubusercontent.com/morningstarnasser/MORNINGSTAR-AI-MODEL/main/math-training/RUNPOD_SETUP.sh
+chmod +x RUNPOD_SETUP.sh
+
+# Setup ausführen (dauert ~10-15 Min)
+./RUNPOD_SETUP.sh
+
+# ============================================
+# SCHRITT 5: Training starten
+# ============================================
+
+cd /workspace/MORNINGSTAR-AI-MODEL/math-training
+
+# OPTION A: Einfaches Training
+python cloud/train_math.py \
+    --dataset-dir data/ \
+    --output-dir /workspace/output/math-qlora \
+    --epochs 3 \
+    --lr 2e-4 \
+    --batch-size 4 \
+    --gradient-accumulation 4
+
+# OPTION B: Mit Weights & Biases Logging (empfohlen)
+export WANDB_API_KEY=your_wandb_key_here
+python cloud/train_math.py \
+    --dataset-dir data/ \
+    --output-dir /workspace/output/math-qlora \
+    --epochs 3 \
+    --wandb
+
+# ============================================
+# SCHRITT 6: Training Monitor (neues Terminal)
+# ============================================
+
+# GPU Monitoring (zeigt VRAM usage)
+watch -n 1 nvidia-smi
+
+# Oder Training Logs ansehen
+tail -f /workspace/output/math-qlora/logs/events*
+
+# ============================================
+# SCHRITT 7: Nach Training - GGUF Export
+# ============================================
+
+cd /workspace/MORNINGSTAR-AI-MODEL/math-training
+
+python cloud/export_gguf.py \
+    --model-dir /workspace/output/math-qlora/merged-model \
+    --output-dir /workspace/export \
+    --quant q4_k_m
+
+# Auch Q8 erstellen (höhere Qualität)
+python cloud/export_gguf.py \
+    --model-dir /workspace/output/math-qlora/merged-model \
+    --output-dir /workspace/export \
+    --quant q8_0
+
+# ============================================
+# SCHRITT 8: Download zu lokalem PC
+# ============================================
+
+# Auf LOKALEM PC (Windows PowerShell oder Git Bash):
+scp -P XXXXX root@XXX.XXX.XXX.XXX:/workspace/export/*.gguf D:/math-training/
+
+# Oder mit WinSCP (GUI):
+# Host: XXX.XXX.XXX.XXX
+# Port: XXXXX
+# User: root
+# Download von: /workspace/export/*.gguf
+# Nach: D:\math-training\
+
+# ============================================
+# SCHRITT 9: Ollama Deployment (lokal)
+# ============================================
+
+cd D:\math-training
+ollama create morningstar-math -f cloud\Modelfile.math
+ollama run morningstar-math
+
+# ============================================
+# SCHRITT 10: Evaluation (lokal)
+# ============================================
+
+cd D:\math-training\eval
+python evaluate_math.py --model morningstar-math --all-levels --verbose
+
+# ============================================
+# WICHTIG: Pod stoppen nach Training!
+# ============================================
+# RunPod Dashboard -> "Stop" klicken
+# Sonst läuft die Rechnung weiter!
+
+# ============================================
+# Kosten Übersicht
+# ============================================
+# A100 80GB: $1.99/hour
+# A6000 48GB: $0.79/hour
+# Storage: $0.10/GB/month
+#
+# Geschätzte Total Cost:
+# - Setup: 15 Min = $0.50
+# - Training: 8h = $15.92
+# - Export: 30 Min = $1.00
+# Total: ~$17.42
+
+# ============================================
+# Troubleshooting
+# ============================================
+
+# Falls Training crashed:
+# Resume von letztem Checkpoint:
+python cloud/train_math.py \
+    --dataset-dir data/ \
+    --resume-from /workspace/output/math-qlora/checkpoint-1500
+
+# Falls CUDA OOM:
+python cloud/train_math.py \
+    --dataset-dir data/ \
+    --batch-size 2 \
+    --gradient-accumulation 8
+
+# Falls Dataset fehlt:
+cd /workspace/MORNINGSTAR-AI-MODEL/math-training
+./RUNPOD_SETUP.sh
